@@ -8,19 +8,19 @@
 #import <ImageIO/ImageIO.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 
-/* Add this before each category implementation, so we don't have to use -all_load or -force_load
- * to load object files from static libraries that only contain categories and no classes.
- *
- * See http://developer.apple.com/library/mac/#qa/qa2006/qa1490.html for more info.
- */
-
-@interface FIX_CATEGORY_BUG_ImageMetadataCategory @end
-@implementation FIX_CATEGORY_BUG_ImageMetadataCategory @end
-
-
 @implementation NSMutableDictionary (ImageMetadataCategory)
 
-@dynamic trueHeading;
+@dynamic location;
+
+- (NSString *)getUTCFormattedDate:(NSDate *)localDate {
+    static NSDateFormatter *dateFormatter = nil;
+    if (dateFormatter == nil) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyy:MM:dd HH:mm:ss"];
+    }
+    NSString *dateString = [dateFormatter stringFromDate:localDate];
+    return dateString;
+}
 
 - (id)initWithImageSampleBuffer:(CMSampleBufferRef) imageDataSampleBuffer {
     
@@ -69,7 +69,6 @@
 - (id)initFromAssetURL:(NSURL*)assetURL {
 
     if ((self = [self init])) {
-        NSURL* assetURL = nil;
         ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
         [library assetForURL:assetURL 
                  resultBlock:^(ALAsset *asset)  {
@@ -112,7 +111,7 @@
         if ([self objectForKey:(NSString*)kCGImagePropertyGPSDictionary]) {
             [locDict addEntriesFromDictionary:[self objectForKey:(NSString*)kCGImagePropertyGPSDictionary]];
         }
-        [locDict setObject:location.timestamp forKey:(NSString*)kCGImagePropertyGPSTimeStamp];
+        [locDict setObject:[self getUTCFormattedDate:location.timestamp] forKey:(NSString*)kCGImagePropertyGPSTimeStamp];
         [locDict setObject:latRef forKey:(NSString*)kCGImagePropertyGPSLatitudeRef];
         [locDict setObject:[NSNumber numberWithFloat:exifLatitude] forKey:(NSString*)kCGImagePropertyGPSLatitude];
         [locDict setObject:lngRef forKey:(NSString*)kCGImagePropertyGPSLongitudeRef];
@@ -126,21 +125,23 @@
 }
 
 // Set heading while preserving location metadata, if it exists.
-- (void)setHeading:(CLHeading *)locatioHeading {
+- (void)setHeading:(CLHeading *)locationHeading {
     
-    if (locatioHeading) {
-        
-        CLLocationDirection trueDirection = locatioHeading.trueHeading;
-        NSMutableDictionary *locDict = [[NSMutableDictionary alloc] init];
-        if ([self objectForKey:(NSString*)kCGImagePropertyGPSDictionary]) {
-            [locDict addEntriesFromDictionary:[self objectForKey:(NSString*)kCGImagePropertyGPSDictionary]];
-        }
-        [locDict setObject:@"T" forKey:(NSString*)kCGImagePropertyGPSImgDirectionRef];
-        [locDict setObject:[NSNumber numberWithFloat:trueDirection] forKey:(NSString*)kCGImagePropertyGPSImgDirection];
-
-        [self setObject:locDict forKey:(NSString*)kCGImagePropertyGPSDictionary];
-        [locDict release];    
+    if (locationHeading) {
+        [self setTrueHeading:locationHeading.trueHeading];
     }
+}
+
+- (void)setTrueHeading:(CLLocationDirection)trueHeading {
+    NSMutableDictionary *locDict = [[NSMutableDictionary alloc] init];
+    if ([self objectForKey:(NSString*)kCGImagePropertyGPSDictionary]) {
+        [locDict addEntriesFromDictionary:[self objectForKey:(NSString*)kCGImagePropertyGPSDictionary]];
+    }
+    [locDict setObject:@"T" forKey:(NSString*)kCGImagePropertyGPSImgDirectionRef];
+    [locDict setObject:[NSNumber numberWithFloat:trueHeading] forKey:(NSString*)kCGImagePropertyGPSImgDirection];
+    
+    [self setObject:locDict forKey:(NSString*)kCGImagePropertyGPSDictionary];
+    [locDict release];
 }
 
 - (CLLocation*)location {
@@ -205,12 +206,14 @@
 }
 
 - (void)setDateOriginal:(NSDate *)date {
-    [EXIF_DICT setObject:date forKey:(NSString*)kCGImagePropertyExifDateTimeOriginal];
-    [TIFF_DICT setObject:date forKey:(NSString*)kCGImagePropertyTIFFDateTime];
+    NSString *dateString = [self getUTCFormattedDate:date];
+    [EXIF_DICT setObject:dateString forKey:(NSString*)kCGImagePropertyExifDateTimeOriginal];
+    [TIFF_DICT setObject:dateString forKey:(NSString*)kCGImagePropertyTIFFDateTime];
 }
 
 - (void)setDateDigitized:(NSDate *)date {
-    [EXIF_DICT setObject:date forKey:(NSString*)kCGImagePropertyExifDateTimeDigitized];
+    NSString *dateString = [self getUTCFormattedDate:date];
+    [EXIF_DICT setObject:dateString forKey:(NSString*)kCGImagePropertyExifDateTimeDigitized];
 }
 
 - (void)setMake:(NSString*)make model:(NSString*)model software:(NSString*)software {
@@ -247,7 +250,7 @@
  * If not present, a value of 1 is assumed. */ 
 
 // Reference: http://sylvana.net/jpegcrop/exif_orientation.html
-- (void)setImageOrientarion:(UIImageOrientation)orientation {
+- (void)setImageOrientation:(UIImageOrientation)orientation {
     int o = 1;
     switch (orientation) {
         case UIImageOrientationUp:
