@@ -1,0 +1,977 @@
+openapi: 3.1.0
+info:
+  title: Hansel
+  version: 1.0.0
+  description: The krum keeper
+  x-fiddle-import-file: true
+servers:
+- url: http://127.0.0.1:8080/api
+  description: Localhost development
+paths:
+  /user/add:
+    put:
+      tags:
+      - user
+      summary: add user
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: AddUserOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - in: query
+        name: uid
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: UserID
+        allowReserved: false
+      - in: query
+        name: username
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: Users unique username
+        allowReserved: false
+      - in: query
+        name: firstname
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: Users First Name
+        allowReserved: false
+      - in: query
+        name: lastname
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: users last name
+        allowReserved: false
+      - in: query
+        name: email
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: users email address
+        allowReserved: false
+      - in: query
+        name: mobilenumber
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: users mobile number
+        allowReserved: false
+      - in: query
+        name: bio
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: false
+        description: users bio text
+        allowReserved: false
+      - in: query
+        name: profile_pic
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: url for users profile pic?
+        allowReserved: false
+      description: Create a new user
+      operationId: addUser
+  /krum/drop:
+    put:
+      tags:
+      - krum
+      summary: drop krum
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: DropKrumOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - in: query
+        name: uid
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: User ID of the person dropping the krum
+        allowReserved: false
+      - in: query
+        name: lat
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: Latitude
+        allowReserved: false
+      - in: query
+        name: long
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: Longitude
+        allowReserved: false
+      - in: query
+        name: altitude
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: Altitude of the krum
+        allowReserved: false
+      - in: query
+        name: timestamp
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: moment the krum was dropped
+        allowReserved: false
+      - in: query
+        name: krumText
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: text content of the krum
+        allowReserved: false
+      - in: query
+        name: media_url
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: image content for the krum
+        allowReserved: false
+      - in: query
+        name: video_url
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: false
+        description: video content for the krum
+        allowReserved: false
+      - in: query
+        name: anchor
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: anchor data for augmented reality positioning
+        allowReserved: false
+      - in: query
+        name: media_type
+        style: form
+        schema:
+          type: string
+          oneOf:
+          - enum:
+            - image
+            - video
+            type: string
+            default: image
+            description: is the krum based on an image or a video
+        explode: true
+        required: true
+        description: '"image" or "video"'
+        allowReserved: false
+      - in: query
+        name: scheduledTime
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: time when krum will be made available to view. allows for delay for safety reasons.
+        allowReserved: false
+      - in: query
+        name: krumType
+        style: form
+        schema:
+          type: string
+          oneOf:
+          - enum:
+            - user
+            - business
+            - ad
+            - minigame
+            type: string
+            default: user
+            description: different types of krums
+        explode: true
+        required: true
+        description: '"user", "ad", "business", "minigame"'
+        allowReserved: false
+      - in: query
+        name: audience
+        style: form
+        schema:
+          type: string
+          oneOf:
+          - enum:
+            - public
+            - followers
+            - friends
+            - private
+            type: string
+            default: public
+            description: who can see this krum
+        explode: true
+        required: true
+        description: who can see the krum
+        allowReserved: false
+      description: Creates a new krum
+      operationId: dropKrum
+  /user/{uid}:
+    get:
+      tags:
+      - user
+      summary: get user
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: GetUserOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - $ref: '#/components/parameters/uid'
+      description: Return user profile info based on unique user ID
+      operationId: getUser
+  /krum/update:
+    put:
+      tags:
+      - krum
+      summary: update krum
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - in: query
+        name: id
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: krumID
+        allowReserved: false
+      - in: query
+        name: text_content
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: false
+        description: krum text
+        allowReserved: false
+      - in: query
+        name: audience
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: false
+        description: who can see the krum
+        allowReserved: false
+      description: Edit krum content
+      operationId: updateKrum
+  /krums/{uid}:
+    get:
+      tags:
+      - krums
+      summary: get user krums
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: GetUserKrumsOk
+          description: A success response with a greeting.
+      parameters:
+      - $ref: '#/components/parameters/uid'
+      description: returns krums from a given user based on their user ID (uid)
+      operationId: getUserKrums
+  /krums/filter:
+    get:
+      tags:
+      - krums
+      summary: filter krums
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                title: FilterKrumsOk
+                required:
+                - data
+                properties:
+                  data:
+                    type: string
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - in: query
+        name: audience
+        style: form
+        schema:
+          type: string
+          oneOf:
+          - enum:
+            - public
+            - following
+            - friends
+            - private
+            type: string
+            default: public
+            description: enum
+        explode: true
+        required: false
+        description: 'filter krums based on who dropped them: anyone (public), the people the user follows (following), the users friends (friends), or just the users own krums (private)'
+        allowReserved: false
+      - in: query
+        name: timeLimit
+        style: form
+        schema:
+          type: string
+          oneOf:
+          - enum:
+            - infinity
+            - month
+            - week
+            - day
+            type: string
+            default: infinity
+            description: enum
+        explode: true
+        required: false
+        description: timelimit
+        allowReserved: false
+      - in: query
+        name: keywords
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: false
+        description: Specific words the user would like to filter on. These can be any string that would be found in the krum text, a specific user if the "@" symbol is used, or a hashtag beginning with the "#" symbol.
+        allowReserved: false
+      description: 'Returns krums that meet all or some of the following criteria: visibility, time limit, and/or keywords.'
+      operationId: filterKrums
+  /krums/nearby:
+    get:
+      tags:
+      - krums
+      summary: get nearby krums
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: GetNearbyKrumsOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - in: query
+        name: lat
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: Users latitude
+        allowReserved: false
+      - in: query
+        name: long
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: Users longtitude
+        allowReserved: false
+      - in: query
+        name: alt
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: Users altitude
+        allowReserved: false
+      - in: query
+        name: radius
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: radius around user to pull krums from
+        allowReserved: false
+      description: Returns the krums within a certain radius of the user based on their lat/long/alt
+      operationId: getNearbyKrums
+  /krum/{krumId}:
+    get:
+      tags:
+      - krum
+      summary: get krum
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Krum'
+          description: The request was successful, and the server has returned the requested resource in the response body.
+        '404':
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - message
+                properties:
+                  message:
+                    type: string
+          description: The requested resource was not found.
+      parameters:
+      - $ref: '#/components/parameters/krumId'
+      description: This returns a single krum based on it's unique krumID
+      operationId: getKrum
+  /user/isfollowing:
+    get:
+      tags:
+      - user
+      summary: is following
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: IsFollowingOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - in: query
+        name: uid1
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: User that is following the other
+        allowReserved: false
+      - in: query
+        name: uid2
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: User that is being followed
+        allowReserved: false
+      description: Return true/false (1/0) if the first user (uid1) is following the second user (uid2)
+      operationId: isFollowing
+  /krums/count/{uid}:
+    get:
+      tags:
+      - krums
+      summary: get krums count
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: GetKrumsCountOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - $ref: '#/components/parameters/uid'
+      description: Returns the number of krums a given user has dropped based on their unique user ID
+      operationId: getKrumsCount
+  /user/delete/{uid}:
+    delete:
+      tags:
+      - user
+      summary: delete user
+      responses:
+        '204':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: DeleteUserNoContent
+          description: The request was successful, but there is no content to return in the response.
+      parameters:
+      - $ref: '#/components/parameters/uid'
+      description: delete user
+      operationId: deleteUser
+  /user/update/{uid}:
+    put:
+      tags:
+      - user
+      summary: update user profile
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: UpdateUserProfileOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - in: query
+        name: username
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: false
+        description: username of user
+        allowReserved: false
+      - in: query
+        name: name
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: false
+        description: Full name of user
+        allowReserved: false
+      - in: query
+        name: email
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: false
+        description: email address of user
+        allowReserved: false
+      - in: query
+        name: mobilenumber
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: false
+        description: mobile phone number of user
+        allowReserved: false
+      - in: query
+        name: bio
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: false
+        description: user's bio
+        allowReserved: false
+      - in: query
+        name: profilepic
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: false
+        description: profile picture of the user
+        allowReserved: false
+      - $ref: '#/components/parameters/uid'
+      description: Updates the user profile record for a given user based on their unique userID
+      operationId: updateUserProfile
+  /user/activities/add:
+    put:
+      tags:
+      - user
+      summary: add user activity
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: AddUserActivityOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - in: query
+        name: uid
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: User ID of the person whose activity this is associated with
+        allowReserved: false
+      - in: query
+        name: title
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: 'short title of what the activity is about: "so-and-so followed you" or "so-and-so dropped a krum"'
+        allowReserved: false
+      - in: query
+        name: description
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: false
+        description: longer text which may include krum text, comment text, etc.
+        allowReserved: false
+      - in: query
+        name: krumId
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: false
+        description: Unique ID of any associated krum
+        allowReserved: false
+      - in: query
+        name: image
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: the associated image to the activity. Could be a profile pic of the person that followed you or that you followed, a krum image, etc.
+        allowReserved: false
+      description: Adds an item to the user's activity feed based on their unique user ID
+      operationId: addUserActivity
+  /krum/delete/{krumId}:
+    delete:
+      tags:
+      - krum
+      summary: delete krum
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: DeleteKrumOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - $ref: '#/components/parameters/krumId'
+      description: Deletes the specified krum based on its unique krum ID
+      operationId: deleteKrum
+  /user/activities/{uid}:
+    get:
+      tags:
+      - user
+      summary: get user activities
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: GetUserActivitiesOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - $ref: '#/components/parameters/uid'
+      description: Return all of the items (so-and-so dropped a krum near you, so-and-so followed you, etc.) that populate the users Activities Feed
+      operationId: getUserActivities
+  /users/followers/{uid}:
+    get:
+      tags:
+      - users
+      summary: get followers
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: GetFollowersOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - $ref: '#/components/parameters/uid'
+      description: Return the user info for all followers of a user based on that user's unique user ID
+      operationId: getFollowers
+  /users/following/{uid}:
+    get:
+      tags:
+      - users
+      summary: get following
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: GetFollowingOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - $ref: '#/components/parameters/uid'
+      description: Return all of the user info for everyone a user is following based on that user's unique user ID
+      operationId: getFollowing
+  /krum/comments/{krumId}:
+    get:
+      tags:
+      - krum
+      summary: get krum comments
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: GetKrumCommentsOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - $ref: '#/components/parameters/krumId'
+      description: Returns all of the comment info for a specified krum based on its unique krum ID
+      operationId: getKrumComments
+  /krum/likes/add/{krumId}:
+    put:
+      tags:
+      - krum
+      summary: add krum like
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: AddKrumLikeOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - $ref: '#/components/parameters/krumId'
+      description: Adds a like to the specific krum based on its unique krum ID
+      operationId: addKrumLike
+  /misc/search/{searchStr}:
+    get:
+      tags:
+      - misc
+      summary: search
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: SearchOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - $ref: '#/components/parameters/searchStr'
+      description: Returns krum or user based on search string. The search string will simply be text. The backend will handle what to do with it. It will look for any instance of each word in the search string; i.e. usernames, krum text, etc.
+      operationId: search
+  /krum/likes/count/{krumId}:
+    get:
+      tags:
+      - krum
+      summary: get krum likes count
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: GetKrumLikesCountOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - $ref: '#/components/parameters/krumId'
+      description: Returns the number of likes for a given krum based on it's unique krum ID
+      operationId: getKrumLikesCount
+  /krum/comments/add/{krumId}:
+    put:
+      tags:
+      - krum
+      summary: add krum comment
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: AddKrumCommentOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - $ref: '#/components/parameters/krumId'
+      - in: query
+        name: uid
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: true
+        description: user ID of the person making the comment
+        allowReserved: false
+      - in: query
+        name: comment
+        style: form
+        schema:
+          type: string
+        explode: true
+        required: false
+        description: Users comment text
+        allowReserved: false
+      description: Adds a comment to a krum based on its unique krum ID
+      operationId: addKrumComment
+  /krum/likes/remove/{krumId}:
+    put:
+      tags:
+      - krum
+      summary: remove krum like
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: RemoveKrumLikeOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - $ref: '#/components/parameters/krumId'
+      description: Removes a like ("Unlikes") from a krum based on its unique krum ID
+      operationId: removeKrumLike
+  /users/followers/count/{uid}:
+    get:
+      tags:
+      - users
+      summary: get followers count
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: GetFollowersCountOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - $ref: '#/components/parameters/uid'
+      description: Returns the number of people following a given user based on their unique user ID
+      operationId: getFollowersCount
+  /krum/comments/count/{krumId}:
+    get:
+      tags:
+      - krum
+      summary: get krum comments count
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                title: GetKrumCommentsCountOk
+          description: The request was successful, and the server has returned the requested resource in the response body.
+      parameters:
+      - $ref: '#/components/parameters/krumId'
+      description: Returns the number of comments a specified krum has received based on its unique krum ID
+      operationId: getKrumCommentsCount
+components:
+  schemas:
+    Krum:
+      type: object
+      required:
+      - id
+      - type
+      - thumbnail
+      - textContent
+      - mediaType
+      - mediaUrl
+      - latitude
+      - longitude
+      - altitude
+      - audience
+      - scheduledTime
+      - userId
+      - username
+      - profilePic
+      - timestamp
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        userId:
+          type: string
+        altitude:
+          type: number
+        audience:
+          type: string
+        latitude:
+          type: number
+        mediaUrl:
+          type: string
+        username:
+          type: string
+        longitude:
+          type: number
+        mediaType:
+          type: string
+        thumbnail:
+          type: string
+        timestamp:
+          type: string
+        profilePic:
+          type: string
+        textContent:
+          type: string
+        scheduledTime:
+          type: string
+      description: ''
+  parameters:
+    uid:
+      in: path
+      name: uid
+      schema:
+        type: string
+      required: true
+    krumId:
+      in: path
+      name: krumId
+      schema:
+        type: string
+      required: true
+    searchStr:
+      in: path
+      name: searchStr
+      schema:
+        type: string
+      required: true
+tags:
+- name: krums
+- name: krum
+- name: users
+- name: user
+- name: search
+- name: misc
